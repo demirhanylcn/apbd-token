@@ -1,6 +1,5 @@
-using solution.Repository;
-using solution.RepositoryInterfaces;
 using token.DTOs;
+using token.RepositoryInterfaces;
 using token.ServiceInterfaces;
 
 namespace solution.Service;
@@ -18,9 +17,7 @@ public class PrescriptionMedicamentService : IPrescriptionMedicamentService
     {
         var result = 0;
         foreach (var each in addPrescriptionDto.Medicaments)
-        {
             result = await _PrescriptionMedicamentRepository.CompletePrescriptionInsert(each, prescriptionId);
-        }
 
         return result;
     }

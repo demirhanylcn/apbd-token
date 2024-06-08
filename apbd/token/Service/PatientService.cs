@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using solution.Repository;
-using solution.RepositoryInterfaces;
 using token.DTOs;
+using token.RepositoryInterfaces;
 using token.ServiceInterfaces;
 
-namespace solution.Service;
+namespace token.Service;
 
 public class PatientService : IPatientService
 {
@@ -14,6 +13,7 @@ public class PatientService : IPatientService
     {
         _PatientRepository = patientRepository;
     }
+
     public async Task<int> InsertNewPatient([FromBody] AddPrescriptionDto addPrescriptionDto)
     {
         var result = await _PatientRepository.InsertNewPatient(addPrescriptionDto);
@@ -28,11 +28,7 @@ public class PatientService : IPatientService
 
     public async Task<PatientDto> GetPatientInformation(int patientId)
     {
-       var result = await _PatientRepository.GetPatientInformation(patientId);
-       return result;
+        var result = await _PatientRepository.GetPatientInformation(patientId);
+        return result;
     }
-    
-
-
-
 }

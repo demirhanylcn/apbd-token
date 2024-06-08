@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using solution.Models;
-
-namespace solution.Data;
+using token.Models;
+namespace token.Data;
 
 public class MedicamentConfiguration : IEntityTypeConfiguration<Medicament>
 {

@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace solution.Models;
+namespace token.Models;
 
 public class Patient
 {
@@ -8,7 +6,6 @@ public class Patient
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public DateTime BirthDate { get; set; }
-    
-    public ICollection<Prescription> Prescriptions { get; set; }
 
+    public ICollection<Prescription> Prescriptions { get; set; }
 }

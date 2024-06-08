@@ -7,5 +7,4 @@ public class PrescriptionDto
     public DateTime DueDate { get; set; }
     public List<MedicamentDto> MedicamentDtos { get; set; }
     public DoctorDto DoctorDtos { get; set; }
-
 }

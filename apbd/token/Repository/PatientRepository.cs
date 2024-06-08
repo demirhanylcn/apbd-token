@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using solution.Models;
-using solution.RepositoryInterfaces;
+using token.Context;
 using token.DTOs;
+using token.Models;
+using token.RepositoryInterfaces;
 
-namespace solution.Repository;
+namespace token.Repository;
 
 public class PatientRepository : IPatientRepository
 {
@@ -14,6 +15,7 @@ public class PatientRepository : IPatientRepository
     {
         AppDbContext = appDbContext;
     }
+
     public async Task<bool> CheckPatientExist(int patientId)
     {
         var patient =
@@ -75,6 +77,4 @@ public class PatientRepository : IPatientRepository
 
         return result;
     }
-
-    
 }

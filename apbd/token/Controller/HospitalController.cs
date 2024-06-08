@@ -1,23 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
-using solution.Exception;
-using solution.Service;
 using token.DTOs;
+using token.Exception;
 using token.ServiceInterfaces;
 
-namespace solution.Controller;
-
+namespace token.Controller;
 
 [ApiController]
 [Route("api/")]
 public class HospitalController : ControllerBase
 {
+    private readonly IDoctorService _DoctorService;
+    private readonly IMedicamentService _MedicamentService;
+    private readonly IPatientService _PatientService;
+    private readonly IPrescriptionMedicamentService _PrescriptionMedicamentService;
 
-    private IPrescriptionService _PrescriptionService;
-    private IDoctorService _DoctorService;
-    private IMedicamentService _MedicamentService;
-    private IPrescriptionMedicamentService _PrescriptionMedicamentService;
-    private IPatientService _PatientService;
-    
+    private readonly IPrescriptionService _PrescriptionService;
+
 
     public HospitalController(IPrescriptionService prescriptionService,
         IPatientService patientService,
@@ -32,7 +30,7 @@ public class HospitalController : ControllerBase
         _PatientService = patientService;
     }
 
-    
+
     [HttpPost("AddPrescription")]
     public async Task<IActionResult> AddPrescription([FromBody] AddPrescriptionDto addPrescriptionDto)
     {
@@ -65,17 +63,14 @@ public class HospitalController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        
-        
     }
 
     [HttpGet("GetPatientInformation/{patientId:int}")]
     public async Task<IActionResult> GetPatientInformation(int patientId)
     {
-
         try
         {
-            var patientExists= await _PatientService.CheckPatientExist(patientId);
+            var patientExists = await _PatientService.CheckPatientExist(patientId);
             if (!patientExists) throw new PatientDoesntExistsException(patientId);
             var patient = await _PatientService.GetPatientInformation(patientId);
             return Ok(patient);
@@ -84,6 +79,5 @@ public class HospitalController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-      
     }
 }

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using solution.Exception;
-using solution.RepositoryInterfaces;
 using token.DTOs;
+using token.Exception;
+using token.RepositoryInterfaces;
 using token.ServiceInterfaces;
 
-namespace solution.Service;
+namespace token.Service;
 
 public class PrescriptionService : IPrescriptionService
 {
@@ -14,6 +14,7 @@ public class PrescriptionService : IPrescriptionService
     {
         _PrescriptionRepository = prescriptionRepository;
     }
+
     public async Task<int> AddPrescription([FromBody] AddPrescriptionDto addPrescriptionDto)
     {
         var result = await _PrescriptionRepository.AddPrescription(addPrescriptionDto);
@@ -25,6 +26,6 @@ public class PrescriptionService : IPrescriptionService
         var dueDate = addPrescriptionDto.PrescriptionDueDate;
         var date = addPrescriptionDto.PrescriptionDate;
         var result = dueDate >= date;
-        if (result!) throw new DueDateSmallerThanDateException(dueDate,date);
-    } 
+        if (result!) throw new DueDateSmallerThanDateException(dueDate, date);
+    }
 }

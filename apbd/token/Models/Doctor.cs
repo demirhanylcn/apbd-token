@@ -1,5 +1,4 @@
-
-namespace solution.Models;
+namespace token.Models;
 
 public class Doctor
 {
@@ -7,7 +6,6 @@ public class Doctor
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
-    
-    public ICollection<Prescription> Prescriptions { get; set; }
 
+    public ICollection<Prescription> Prescriptions { get; set; }
 }

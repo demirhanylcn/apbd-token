@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using solution.Exception;
-using solution.RepositoryInterfaces;
+using token.Context;
 using token.DTOs;
+using token.Exception;
+using token.RepositoryInterfaces;
 
-namespace solution.Repository;
+namespace token.Repository;
 
 public class DoctorRepository : IDoctorRepository
 {
@@ -14,7 +15,7 @@ public class DoctorRepository : IDoctorRepository
     {
         AppDbContext = appDbContext;
     }
-    
+
     public async Task<bool> CheckDoctorExist([FromBody] AddPrescriptionDto addPrescriptionDto)
     {
         var doctor =
@@ -22,5 +23,4 @@ public class DoctorRepository : IDoctorRepository
         if (doctor == null) throw new DoctorDoesntExistsException(addPrescriptionDto.DoctorId);
         return true;
     }
-
 }

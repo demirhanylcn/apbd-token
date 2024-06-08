@@ -3,52 +3,82 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using solution.Models;
+using token.Context;
 using token.Contracts;
+using token.Exception;
 using token.Helpers;
+using token.Models;
+using token.RepositoryInterfaces;
 using token.ServiceInterfaces;
 using LoginRequest = token.Contracts.LoginRequest;
 
 
-namespace solution.Service;
+namespace token.Service;
 
 public class AuthService : IAuthService
 {
     private readonly IConfiguration _configuration;
+    private readonly IUserRepository _userRepository;
+    private readonly AppDbContext _appDbContext;
 
-    public AuthService(IConfiguration configuration)
+    public AuthService(IConfiguration configuration,IUserRepository userRepository,AppDbContext appDbContext)
     {
+        _appDbContext = appDbContext;
+        _userRepository = userRepository;
         _configuration = configuration;
     }
 
     public void RegisterUser(RegisterUserRequest request)
     {
-        // check if user with email exists etc...
-        var (hashedPassword, salt) = SecurityHelpers.GetHashedPasswordAndSalt(request.Password);
-        var userToAdd = new User
-        {
-            Id = AppDbContext.Users.Max(e => e.Id) + 1,
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Salt = salt,
-            Password = hashedPassword
-        };
+
+
         
-        AppDbContext.Users.Add(userToAdd);
+        _userRepository.CheckUserWithMailExists(request);
+        _userRepository.CheckPasswordStrongEnough(request);
+        
+        User userToAdd;
+        var (hashedPassword, salt) = SecurityHelpers.GetHashedPasswordAndSalt(request.Password);
+        if (_appDbContext.Users.Any())
+        {
+             userToAdd = new User
+            {
+                Id = _appDbContext.Users.Max(e => e.Id) + 1,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Salt = salt,
+                Password = hashedPassword
+            };
+        }
+        else
+        {
+             userToAdd = new User
+            {
+                Id = 1,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Salt = salt,
+                Password = hashedPassword
+            };
+        }
+        
+        
+
+        _appDbContext.Users.Add(userToAdd);
     }
 
     public (string accessToken, string refreshToken) LoginUser(LoginRequest request)
     {
-        var user = AppDbContext.Users.FirstOrDefault(e =>
+        var user = _appDbContext.Users.FirstOrDefault(e =>
             string.Equals(request.Email, e.Email, StringComparison.OrdinalIgnoreCase));
 
-        // handle if user not found
+        if (user == null) throw new UserDoesntExistsException();
         var hashedPassword = SecurityHelpers.GetHashedPasswordWithSalt(request.Password, user.Salt);
         
-        //handle invalid password provided
-        if (hashedPassword != user.Password) throw new System.Exception("Incorrect password bla bla bla");
         
+        if (hashedPassword != user.Password) throw new ThiefExeption();
+
         var userClaims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, Convert.ToString(user.Id)),
@@ -56,7 +86,7 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, "Customer")
         };
-        
+
         var accessToken = GenerateAccessToken(userClaims);
         var refreshToken = GenerateRefreshToken();
 
@@ -73,16 +103,16 @@ public class AuthService : IAuthService
         var credentials = new SigningCredentials(sskey, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Auth:ValidIssuer"],
-            audience: _configuration["Auth:ValidAudience"],
-            claims: claims,
+            _configuration["Auth:ValidIssuer"],
+            _configuration["Auth:ValidAudience"],
+            claims,
             expires: DateTime.Now.AddMinutes(5),
             signingCredentials: credentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
+
     private string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
@@ -90,4 +120,5 @@ public class AuthService : IAuthService
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
     }
+    
 }

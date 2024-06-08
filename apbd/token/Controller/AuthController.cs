@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using token.Contracts;
 using token.ServiceInterfaces;
 
-
 namespace token.Controller;
 
 [ApiController]
@@ -25,7 +24,7 @@ public class AuthController : ControllerBase
         _auth.RegisterUser(request);
         return Ok();
     }
-    
+
     [HttpPost]
     [Route("login")]
     [AllowAnonymous]
@@ -37,5 +36,5 @@ public class AuthController : ControllerBase
             AccessToken = accessToken,
             RefreshToken = refreshToken
         });
-    }    
+    }
 }

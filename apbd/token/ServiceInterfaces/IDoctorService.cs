@@ -6,5 +6,4 @@ namespace token.ServiceInterfaces;
 public interface IDoctorService
 {
     public void CheckDoctorExist([FromBody] AddPrescriptionDto addPrescriptionDto);
-
 }

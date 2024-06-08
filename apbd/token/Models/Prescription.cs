@@ -1,15 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace solution.Models;
-
-
+namespace token.Models;
 
 public class Prescription
 {
     public int Id { get; set; }
     public DateTime Date { get; set; }
     public DateTime DueDate { get; set; }
-    
+
     public int DoctorId { get; set; }
     public Doctor Doctor { get; set; }
 

@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace solution.Models;
+namespace token.Models;
 
 public class PrescriptionMedicament
 {
@@ -11,5 +9,4 @@ public class PrescriptionMedicament
 
     public int MedicamentId { get; set; }
     public Medicament Medicament { get; set; }
-
 }

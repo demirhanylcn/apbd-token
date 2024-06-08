@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using solution.Models;
-using solution.RepositoryInterfaces;
+using token.Context;
 using token.DTOs;
+using token.Models;
+using token.RepositoryInterfaces;
 
-namespace solution.Repository;
+namespace token.Repository;
 
 public class PrescriptionMedicamentRepository : IPrescriptionMedicamentRepository
 {
@@ -17,7 +18,6 @@ public class PrescriptionMedicamentRepository : IPrescriptionMedicamentRepositor
 
     public async Task<int> CompletePrescriptionInsert(MedicamentDto medicamentDto, int prescriptionId)
     {
-
         var medicament =
             await AppDbConext.Medicaments.FirstOrDefaultAsync(m =>
                 m.IdMedicament == medicamentDto.IdMedicament);
@@ -35,6 +35,5 @@ public class PrescriptionMedicamentRepository : IPrescriptionMedicamentRepositor
 
         var result = await AppDbConext.SaveChangesAsync();
         return result;
-
     }
 }

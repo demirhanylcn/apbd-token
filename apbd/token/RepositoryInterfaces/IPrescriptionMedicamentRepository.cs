@@ -1,9 +1,8 @@
 using token.DTOs;
 
-namespace solution.RepositoryInterfaces;
+namespace token.RepositoryInterfaces;
 
 public interface IPrescriptionMedicamentRepository
 {
     public Task<int> CompletePrescriptionInsert(MedicamentDto medicamentDto, int prescriptionId);
-
 }

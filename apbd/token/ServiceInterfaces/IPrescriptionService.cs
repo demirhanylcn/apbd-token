@@ -7,6 +7,4 @@ public interface IPrescriptionService
 {
     public Task<int> AddPrescription([FromBody] AddPrescriptionDto addPrescriptionDto);
     public void CheckDueDate([FromBody] AddPrescriptionDto addPrescriptionDto);
-
-
 }

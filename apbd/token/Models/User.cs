@@ -1,4 +1,4 @@
-﻿namespace solution.Models;
+﻿namespace token.Models;
 
 public class User
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using solution.Models;
+using token.Models;
 
-namespace solution.Data;
+namespace token.Data;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {

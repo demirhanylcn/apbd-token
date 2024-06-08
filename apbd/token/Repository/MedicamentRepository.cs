@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using solution.Exception;
-using solution.RepositoryInterfaces;
+using token.Context;
+using token.Exception;
+using token.RepositoryInterfaces;
 
-namespace solution.Repository;
+namespace token.Repository;
 
 public class MedicamentRepository : IMedicamentRepository
 {
@@ -19,6 +20,4 @@ public class MedicamentRepository : IMedicamentRepository
         if (medicament == null) throw new MedicamentDoesntExistsException(medicamentId);
         return true;
     }
-
-   
 }

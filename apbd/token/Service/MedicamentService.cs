@@ -1,10 +1,10 @@
-using solution.Exception;
-using solution.Repository;
-using solution.RepositoryInterfaces;
+
 using token.DTOs;
+using token.Exception;
+using token.RepositoryInterfaces;
 using token.ServiceInterfaces;
 
-namespace solution.Service;
+namespace token.Service;
 
 public class MedicamentService : IMedicamentService
 {
@@ -18,9 +18,7 @@ public class MedicamentService : IMedicamentService
     public async void CheckMedicamentExists(AddPrescriptionDto addPrescriptionDto)
     {
         foreach (var medicament in addPrescriptionDto.Medicaments)
-        {
-          await _MedicamentRepository.CheckMedicamentExists(medicament.IdMedicament);
-        }
+            await _MedicamentRepository.CheckMedicamentExists(medicament.IdMedicament);
     }
 
     public void CheckMedicamentLowerThan10(AddPrescriptionDto addPrescriptionDto)
@@ -28,5 +26,4 @@ public class MedicamentService : IMedicamentService
         var result = addPrescriptionDto.Medicaments.Count >= 10;
         if (result!) throw new MedicamentGreaterThan10Exception();
     }
-
 }
