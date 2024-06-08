@@ -7,4 +7,5 @@ public interface IAuthService
 {
     public void RegisterUser(RegisterUserRequest request);
     public (string accessToken, string refreshToken) LoginUser(LoginRequest request);
+    public Task<string> GetNewAccessToken(string refleshToken);
 }

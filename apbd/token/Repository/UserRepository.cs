@@ -1,8 +1,11 @@
 ﻿
+using System.Security.Claims;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using token.Context;
 using token.Contracts;
 using token.Exception;
+using token.Models;
 using token.RepositoryInterfaces;
 
 
@@ -18,8 +21,8 @@ public class UserRepository : IUserRepository
     }
     public  void CheckUserWithMailExists(RegisterUserRequest request)
     {
-        var patient = _appDbContext.Users.FirstOrDefault(u => u.Email == request.Email);
-        if (patient == null) throw new UserWithMailExistsException(request.Email);
+        var customer = _appDbContext.Customers.Any(u => u.Email == request.Email);
+        if (customer) throw new UserWithMailExistsException(request.Email);
         
 
     }
@@ -27,7 +30,7 @@ public class UserRepository : IUserRepository
     public void CheckPasswordStrongEnough(RegisterUserRequest request)
     {
         var password = request.Password;
-        var hasMinimum8Chars = new Regex(@".{8,}");
+        var hasMinimum8Chars = new Regex(@".{16,}");
         var hasUpperCaseLetter = new Regex(@"[A-Z]");
         var hasNumber = new Regex(@"\d");
         var hasSpecialChar = new Regex(@"[!@#$%^&*(),.?""{}|<>]");
@@ -36,5 +39,30 @@ public class UserRepository : IUserRepository
             || !hasMinimum8Chars.IsMatch(password)
             || !hasNumber.IsMatch(password)
             || !hasSpecialChar.IsMatch(password)) throw new WeakPasswordException(password);
+    }
+
+    public void CheckLoginDetails(LoginRequest request)
+    {
+        var customer = _appDbContext.Customers.Any(c => c.Email == request.Email);
+        if (!customer) throw new UserDoesntExistsException();
+    }
+
+    public async Task<Customer> GetCustomer(string refleshToken)
+    {
+        var customer = await _appDbContext.Customers.FirstOrDefaultAsync(c => c.RefreshToken == refleshToken);
+        return customer;
+    }
+
+    public Claim[] GetCustomerClaim(Customer customer)
+    {
+        var userClaims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, Convert.ToString(customer.Id)),
+            new Claim(ClaimTypes.Name, $"{customer.FirstName} {customer.LastName}"),
+            new Claim(ClaimTypes.Email, customer.Email),
+            new Claim(ClaimTypes.Role, "Customer")
+        };
+
+        return userClaims;
     }
 }

@@ -30,50 +30,34 @@ public class AuthService : IAuthService
 
     public void RegisterUser(RegisterUserRequest request)
     {
-
-
         
         _userRepository.CheckUserWithMailExists(request);
         _userRepository.CheckPasswordStrongEnough(request);
         
-        User userToAdd;
         var (hashedPassword, salt) = SecurityHelpers.GetHashedPasswordAndSalt(request.Password);
-        if (_appDbContext.Users.Any())
-        {
-             userToAdd = new User
+        
+             var customerToAdd = new Customer
             {
-                Id = _appDbContext.Users.Max(e => e.Id) + 1,
                 Email = request.Email,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Salt = salt,
                 Password = hashedPassword
             };
-        }
-        else
-        {
-             userToAdd = new User
-            {
-                Id = 1,
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Salt = salt,
-                Password = hashedPassword
-            };
-        }
+        
         
         
 
-        _appDbContext.Users.Add(userToAdd);
+        _appDbContext.Customers.Add(customerToAdd);
+        _appDbContext.SaveChanges();
     }
 
     public (string accessToken, string refreshToken) LoginUser(LoginRequest request)
     {
-        var user = _appDbContext.Users.FirstOrDefault(e =>
-            string.Equals(request.Email, e.Email, StringComparison.OrdinalIgnoreCase));
 
-        if (user == null) throw new UserDoesntExistsException();
+        _userRepository.CheckLoginDetails(request);
+        var user = _appDbContext.Customers.FirstOrDefault(e => e.Email == request.Email);
+        
         var hashedPassword = SecurityHelpers.GetHashedPasswordWithSalt(request.Password, user.Salt);
         
         
@@ -92,10 +76,18 @@ public class AuthService : IAuthService
 
         user.RefreshToken = refreshToken;
         user.RefreshTokenExp = DateTime.UtcNow.AddDays(30);
-
+        _appDbContext.SaveChanges();
         return (accessToken, refreshToken);
     }
 
+    public async Task<string> GetNewAccessToken(string refleshToken)
+    {
+        var customer = await _userRepository.GetCustomer(refleshToken);
+        if (customer == null) throw new UserDoesntExistsException();
+        var claim =  _userRepository.GetCustomerClaim(customer);
+        var newToken =  GenerateAccessToken(claim);
+        return newToken;
+    }
 
     private string GenerateAccessToken(IEnumerable<Claim> claims)
     {

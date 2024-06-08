@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using token.DTOs;
 using token.Exception;
@@ -31,6 +32,7 @@ public class HospitalController : ControllerBase
     }
 
 
+    [Authorize]
     [HttpPost("AddPrescription")]
     public async Task<IActionResult> AddPrescription([FromBody] AddPrescriptionDto addPrescriptionDto)
     {
@@ -65,6 +67,7 @@ public class HospitalController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetPatientInformation/{patientId:int}")]
     public async Task<IActionResult> GetPatientInformation(int patientId)
     {
